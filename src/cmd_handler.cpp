@@ -26,7 +26,7 @@ int smCmdReceiver()
 	switch (iState) {
 	case CMDRCV_INIT :
 		iInCmdBufInx = 0;
-		uartReceiveBuff(iInCmdBuffer, 32);
+//		uartReceiveBuff(iInCmdBuffer, 32);
 		iState = CMDRCV_IDLE;
 		iRetCode = 0;
 		break;
