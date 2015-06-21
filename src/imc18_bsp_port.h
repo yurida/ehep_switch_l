@@ -14,7 +14,16 @@
 #define LED_LINE			(1 << 1)
 #define LED_PROG			(1 << 2)
 
+#define OUT0				(1 << 5)
+#define OUT1				(1 << 4)
+#define OUT2				(1 << 3)
+#define OUT3				(1 << 6)
+
 typedef enum {
+	PORT_OUT0,
+	PORT_OUT1,
+	PORT_OUT2,
+	PORT_OUT3,
 	PORT_LEDUNLOCK,
 	PORT_LEDLINE,
 	PORT_LEDPEG

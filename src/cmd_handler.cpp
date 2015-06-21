@@ -10,8 +10,11 @@
 #include "tools.h"
 #include "uart.h"
 
+void delay(unsigned int in_iDelayMs);
+
 char 			iInCmdBuffer[32];
-int 			iInCmdBufInx;
+char*			pCommand;
+//int 			iInCmdBufInx;
 CMDRCV_STATE 	iState;
 
 void smCmdReceiverReset()
@@ -25,13 +28,13 @@ int smCmdReceiver()
 
 	switch (iState) {
 	case CMDRCV_INIT :
-		iInCmdBufInx = 0;
-//		uartReceiveBuff(iInCmdBuffer, 32);
+		uartReceiveBuff(iInCmdBuffer, 32);
+		pCommand = 0;
 		iState = CMDRCV_IDLE;
 		iRetCode = 0;
 		break;
 	case CMDRCV_IDLE :
-		if (1 <= iInCmdBufInx)
+		if (1 <= getUartRxCnt())
 		{
 			if ('U' == iInCmdBuffer[0]) {
 				iState = CMDRCV_SIGNCHECK;
@@ -43,33 +46,37 @@ int smCmdReceiver()
 		}
 		break;
 	case CMDRCV_SIGNCHECK :
-		if (2 <= iInCmdBufInx)
+		if (2 <= getUartRxCnt())
 		{
-			// TODO test for Command signature UU
-			iState = CMDRCV_SNCHECK;
-			iRetCode = 0;
+			if ('U' == iInCmdBuffer[0] && 'U' == iInCmdBuffer[1]) {
+				iState = CMDRCV_SNCHECK;
+				iRetCode = 0;
+			} else {
+				iState = CMDRCV_INIT;
+				iRetCode = CMDRCV_IDLE;
+			}
 		}
 		break;
 	case CMDRCV_SNCHECK :
-		if (2 + 8 <= iInCmdBufInx)
+		if (2 + 4 + 8 <= getUartRxCnt())
 		{
-			// TODO test for Unit Serial number
-			if (0 == buffcmp(DEVICE_SN, iInCmdBuffer + 2, 8)) {
-				uartSendBuff("SN:Ok\r\n", 7);
+			// Test Command for Unit right unit address
+			if (0 == buffcmp(DEVICE_ADDR, iInCmdBuffer + 2, 4)) {
+				pCommand = iInCmdBuffer + 2 + 4;
 				iState = CMDRCV_CMD_DECODE;
 				iRetCode = 0;
 			} else {
-				uartSendBuff("SN:Error\r\n", 10);
 				iState = CMDRCV_INIT;
-				iRetCode = CMDRCV_SNCHECK;
+				iRetCode = CMDRCV_IDLE;
 			}
 		}
 		break;
 	case CMDRCV_CMD_DECODE :
-
-
+//		uartSendBuff(pCommand, 8);
+		iRetCode = cmdDecoder(pCommand);
+		if (0 == iRetCode)
+			iRetCode = CMDRCV_REZ_OK;
 		iState = CMDRCV_INIT;
-		iRetCode = 0;
 		break;
 	default :
 		break;
@@ -77,8 +84,61 @@ int smCmdReceiver()
 
 	}
 
-
-
 	return iRetCode;
 }
 
+
+int cmdDecoder(char* in_pCommand)
+{
+	int iRetCode = 0;
+	int iCmd = -1;
+
+	if (0 == buffcmp("ON_", in_pCommand + 5, 3))
+		iCmd = 1;
+	else if (0 == buffcmp("OFF", in_pCommand + 5, 3))
+		iCmd = 2;
+	else
+		iRetCode = -3; // Set result as unsupported command
+
+	if (-1 < iCmd)
+	{
+		// Switch for End device
+		switch (*(in_pCommand + 4)) {
+		case '0' :
+			if (1 == iCmd)
+				portSwitch(PORT_OUT0, PORT_ON);
+			else if (2 == iCmd)
+				portSwitch(PORT_OUT0, PORT_OFF);
+			break;
+		case '1' :
+			if (1 == iCmd)
+				portSwitch(PORT_OUT1, PORT_ON);
+			else if (2 == iCmd)
+				portSwitch(PORT_OUT1, PORT_OFF);
+			break;
+		case '2' :
+			if (1 == iCmd)
+				portSwitch(PORT_OUT2, PORT_ON);
+			else if (2 == iCmd)
+				portSwitch(PORT_OUT2, PORT_OFF);
+			break;
+		case '3' :
+			if (1 == iCmd)
+				portSwitch(PORT_OUT3, PORT_ON);
+			else if (2 == iCmd)
+				portSwitch(PORT_OUT3, PORT_OFF);
+			break;
+		case 'L' :
+			if (1 == iCmd)
+				portSwitch(PORT_LEDLINE, PORT_ON);
+			else if (2 == iCmd)
+				portSwitch(PORT_LEDLINE, PORT_OFF);
+			break;
+		default: // Set result as unsupported device
+			iRetCode = -2;
+			break;
+		}
+	}
+
+	return iRetCode;
+}

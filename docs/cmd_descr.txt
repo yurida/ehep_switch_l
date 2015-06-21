@@ -1,0 +1,10 @@
+
+UUSrNoDevc#ON_
+UUSrNoDevc#ON_
+
+returns:
+SW:OK
+WR:SW
+WR:CMD
+
+UU1234SWCH1ON_

@@ -34,10 +34,23 @@ int uartSendBuff(const char* in_ariBuff, int in_iSize)
 int uartReceiveBuff(char* ou_iBuff, int in_iBuffSize)
 {
 	int iRetCode = 0;
+	IE2 &= (-1 ^ UCA0RXIE);     // Disable USCI_A0 RX interrupt
+	clearRx();
 	uartRxBuff = ou_iBuff;
 	IE2 |= UCA0RXIE;     // Enable USCI_A0 RX interrupt
     return iRetCode;
 }
+
+int getUartRxCnt()
+{
+	return uartRxIndex;
+}
+
+void clearRx()
+{
+	uartRxIndex = 0;
+}
+
 /*******************************************************************************
  *
  */
@@ -56,6 +69,4 @@ void __attribute__ ((interrupt(USCIAB0TX_VECTOR))) USCI0TX_ISR (void)
 	if (uartTxIndex >= uartTxNumber)              // TX over?
 		IE2 &= ~UCA0TXIE;                       // Disable USCI_A0 TX interrupt
 }
-
-
 

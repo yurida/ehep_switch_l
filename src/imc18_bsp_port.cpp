@@ -9,12 +9,37 @@
 
 void portInit()
 {
+	P2DIR |= OUT0 | OUT1 | OUT2; // | OUT3;
 	P2DIR |= LED_UNLOCK | LED_LINE | LED_PROG;
 }
 
 void portSwitch(PORT_DEV in_iDev, PORT_STATE in_iState)
 {
 	switch (in_iDev) {
+	case PORT_OUT0 :
+		if (PORT_ON == in_iState)
+			P2OUT |= OUT0;
+		else
+			P2OUT &= -1 ^ OUT0;
+		break;
+	case PORT_OUT1 :
+		if (PORT_ON == in_iState)
+			P2OUT |= OUT1;
+		else
+			P2OUT &= -1 ^ OUT1;
+		break;
+	case PORT_OUT2 :
+		if (PORT_ON == in_iState)
+			P2OUT |= OUT2;
+		else
+			P2OUT &= -1 ^ OUT2;
+		break;
+	case PORT_OUT3 :
+		if (PORT_ON == in_iState)
+			P2OUT |= OUT3;
+		else
+			P2OUT &= -1 ^ OUT3;
+		break;
 	case PORT_LEDUNLOCK :
 		if (PORT_ON == in_iState)
 			P2OUT |= LED_UNLOCK;

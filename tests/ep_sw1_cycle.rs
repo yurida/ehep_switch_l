@@ -1,0 +1,6 @@
+#send "UU1234SWCH1$(EPCMD)"
+send "UU1234SWCH1ON_"
+sleep 1
+send "UU1234SWCH1OFF"
+exit 1
+

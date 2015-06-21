@@ -15,12 +15,14 @@ void delay(unsigned int in_iDelayMs);
 unsigned char iRxChar;
 unsigned char iPout;
 
+
 /*******************************************************************************
  *
  */
 int main(int nargs, char** vargs) {
 
 	int iCnt;
+	int iExitCode;
 	WDTCTL = WDTPW + WDTHOLD;                 // Stop watchdog timer
 
 	portInit();
@@ -32,6 +34,7 @@ int main(int nargs, char** vargs) {
 	portSwitch(PORT_LEDUNLOCK, PORT_ON);
 	delay(100);
 	portSwitch(PORT_LEDUNLOCK, PORT_OFF);
+	portSwitch(PORT_LEDLINE, PORT_OFF);
 
 	if (CALBC1_1MHZ == 0xFF) // If calibration constant erased
 	{
@@ -63,6 +66,12 @@ int main(int nargs, char** vargs) {
 	uartSendBuff(DEVICE_SN, 8);
 	delay(100);
 	uartSendBuff("\r\n", 2);
+	delay(100);
+	uartSendBuff("Address:", 8);
+	delay(100);
+	uartSendBuff(DEVICE_ADDR, 4);
+	delay(100);
+	uartSendBuff("\r\n", 2);
 
 	smCmdReceiverReset();
 
@@ -70,27 +79,15 @@ int main(int nargs, char** vargs) {
 //	  P2DIR |= 0xFF;
 //	  P3DIR |= 0xFF;                            // Set P1.0 to output direction
 
-	while (1)                                 // Test P1.4
-	{
-		smCmdReceiver();
-//		  iPout = 0x01;
-//		portSwitch(PORT_LEDLINE, PORT_ON);
-//		delay(1000);
-//		portSwitch(PORT_LEDLINE, PORT_OFF);
-//		  for (iCnt = 0; iCnt < 8; iCnt++)
-//		  {
-//			  P2OUT = iPout;
-//			  iPout <<= 1;
-//			  delay(1000);
-//		  }
-
-//		  P1OUT = 0xFF;
-//		  P2OUT = 0xFF;
-//		  P3OUT = 0xFF;
-//		  delay(1000);
-//		  P1OUT = 0x00;
-//		  P2OUT = 0x00;
-//		  P3OUT = 0x00;
+	for (;;) {
+		iExitCode = smCmdReceiver();
+		if (CMDRCV_REZ_OK == iExitCode) {
+			uartSendBuff("SW:OK \r\n", 8);
+		} else if (-2 == iExitCode) {
+			uartSendBuff("WR:SW \r\n", 8);
+		} else if (-3 == iExitCode) {
+			uartSendBuff("WR:CMD\r\n", 8);
+		}
 		delay(10);
 
 //	    if ((0x10 & P1IN)) P1OUT |= 0x01;       // if P1.4 set, set P1.0

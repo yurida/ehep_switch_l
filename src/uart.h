@@ -10,10 +10,10 @@
 #ifndef SRC_UART_H_
 #define SRC_UART_H_
 
-
+int uartReceiveBuff(char* ou_iBuff, int in_iBuffSize);
 int uartSendBuff(const char* in_ariBuff, int in_iSize);
-
-
+int getUartRxCnt();
+void clearRx();
 
 
 #endif /* SRC_UART_H_ */
