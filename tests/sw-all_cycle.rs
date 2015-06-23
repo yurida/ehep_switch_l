@@ -1,23 +1,24 @@
-label: START
-send "UU1234SWCH0ON_"
-sleep 1
-send "UU1234SWCH0OFF"
-sleep 1
-send "UU1234SWCH1ON_"
-sleep 1
-send "UU1234SWCH1OFF"
-sleep 1
-send "UU1234SWCH2ON_"
-sleep 1
-send "UU1234SWCH2OFF"
-sleep 1
-send "UU1234SWCH3ON_"
-sleep 1
-send "UU1234SWCH3OFF"
-sleep 1
-send "UU1234SWCHLON_"
-sleep 1
-send "UU1234SWCHLOFF"
-sleep 1
-goto START
-exit 1
+label: Start
+        send "UU1234SWCH0ON_"
+        sleep 1
+        send "UU1234SWCH0OFF"
+        print Switched_0
+        send "UU1234SWCH1ON_"
+        sleep 1
+        send "UU1234SWCH1OFF"
+        print Switched_1
+        send "UU1234SWCH2ON_"
+        sleep 1
+        send "UU1234SWCH2OFF"
+        print Switched_2
+        send "UU1234SWCH3ON_"
+        sleep 1
+        send "UU1234SWCH3OFF"
+        print Switched_3
+        send "UU1234SWCHLON_"
+        sleep 1
+        send "UU1234SWCHLOFF"
+        print Switched_Line
+        sleep 1
+goto Start
+

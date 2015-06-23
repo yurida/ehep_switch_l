@@ -14,10 +14,10 @@
 #define LED_LINE			(1 << 1)
 #define LED_PROG			(1 << 2)
 
-#define OUT0				(1 << 5)
+#define OUT0				(1 << 0)
 #define OUT1				(1 << 4)
 #define OUT2				(1 << 3)
-#define OUT3				(1 << 6)
+#define OUT3				(1 << 5)
 
 typedef enum {
 	PORT_OUT0,
